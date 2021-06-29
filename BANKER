@@ -1,0 +1,273 @@
+#include <iostream>
+using namespace std;
+
+int select;
+int m[100][100];
+int need[100][100];
+int p, pr;
+int al[100][100];
+int avai[100];
+int kq[100];
+bool finish1[100];
+bool finish2[100];
+int flag;
+int work[100];
+bool tempcheck;	int k = 0;
+int thutu;
+int rq[100][100];
+int workprocess[100][100];
+int kqr[100];
+void display()
+{
+	cout << "==============BANKER's ALGORITHM================" << endl;
+	if (select == 1)
+	{
+		cout << "PROCESS ALLOCATED\tMAXIMUM \tNEEDED" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			cout << "\nP" << i << "" << "\t";
+			for (int j = 1; j < p - 1; j++)
+			{
+				cout << al[i][j] << " ";
+			}
+			cout << "\t       ";
+			for (int j = 1; j <= pr; j++)
+			{
+				cout << m[i][j] << " ";
+			}
+			cout << "\t     ";
+			for (int j = 1; j <= pr; j++)
+			{
+				cout << need[i][j] << " ";
+			}
+		}cout << "\nTien trinh an toan lan luot la:\n";
+		for (int i = 0; i < k; i++)
+		{
+			cout << "P" << kq[i] << " ";
+		}
+		cout << "\nTien trinh khong an toan lan luot la" << endl;
+		bool flagcheck = true;
+		for (int i = 1; i <= k; i++)
+		{
+			if (finish1[i] == false)cout << "P" << i << " ";
+		}
+	}
+	if (select == 2)
+	{
+		cout << "PROCESS    ALLOCATED\tREQUEST" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			cout << "\nP" << i << "" << "\t\t\t";
+			for (int j = 1; j < p - 1; j++)
+			{
+				cout << al[i][j] << " ";
+			}
+			cout << "\t\t       ";
+			for (int j = 1; j <= pr; j++)
+			{
+				cout << rq[i][j] << " ";
+			}
+			cout << "\t     ";
+
+		}
+		cout << "\nTien trinh an toan lan luot la:\n";
+		for (int i = 0; i < k; i++)
+		{
+			cout << "P" << kqr[i] << " ";
+		}
+		cout << "\nTien trinh khong an toan lan luot la" << endl;
+		bool flagcheck = true;
+		for (int i = 1; i <= k; i++)
+		{
+			if (finish2[i] == false)cout << "P" << i << " ";
+		}
+	}
+	cout << "==============RESULT================";
+	if (thutu == p) { cout << "\nHE THONG AN TOAN"; }
+	else {
+		cout << "\nHE THONG KHONG AN TOAN, DEADLOCK SE DIEN RA";
+
+	}
+	cout << "\n=======================================";
+}
+
+int searchprocess(int thutu)
+{
+	int u = 0;
+	for (int h = 1; h < pr; h++)
+	{
+		if (need[thutu][h] > work[h])
+		{
+			u = -1;
+		}
+	}
+	return u;
+}
+
+
+
+int searchprocesswithrequest(int pline)
+{
+	int temprp = 0;
+	for (int j = 1; j <= pr; j++)
+	{
+		if (rq[pline][j] > work[j])
+		{
+			temprp = -1;
+		}
+	}
+	return temprp;
+}
+
+void processwithrequest()
+{
+	int i = 1;
+	bool flag1 = true;
+	thutu = 0;
+	for (int i = 1; i <= pr; i++)
+	{
+		workprocess[0][i] = work[i];
+	}
+	while (true)
+	{
+		if (finish2[i] == false && searchprocesswithrequest(i) == 0)
+		{
+			finish2[i] = true;
+			kqr[k++] = i;
+			thutu++;
+			for (int j = 1; j <= pr; j++)
+			{
+				work[j] = work[j] + al[i][j];
+				workprocess[i][j] = work[j];
+			}
+
+		}
+		if (i == p)
+		{
+			bool flag = true;
+			for (int j = 1; j <= pr; j++)
+			{
+				if (avai[j] != work[j])flag = false;
+			}
+			for (int j = 1; j <= pr; j++)avai[j] = work[j];
+			if (flag == true)break;
+			else i = 0;
+		}
+		i++;
+	}
+}
+
+void processwithmax()
+{
+	int i = 1;
+	thutu = 0;
+	bool flag1 = true;
+	for (int i = 1; i <= pr; i++)
+	{
+		workprocess[0][i] = work[i];
+	}
+	while (true)
+	{
+		if (finish1[i] == false && searchprocess(i) == 0)
+		{
+			{
+				finish1[i] = true;
+				kq[k++] = i;
+				thutu++;
+				for (int j = 1; j <= pr; j++)
+				{
+					work[j] = work[j] + al[i][j];
+				}
+			}
+
+		}
+
+		if (i == p)
+		{
+			bool flag = true;
+			for (int j = 0; j < pr; j++)
+			{
+				if (avai[j] != work[j])flag = false;
+			}
+			for (int j = 0; j < pr; j++)avai[j] = work[j];
+			if (flag == true)break;
+			else i = 0;
+		}
+		i++;
+
+	}
+}
+
+void input()
+{
+	cout << "nhap so luong tien trinh va so luong the hien tien trinh" << endl;
+	cin >> p >> pr;
+	cout << "Vui long nhap so 1 hoac 2 de chon loai the hien:" << endl;
+	cout << "the hien 1: su dung ma tran need:" << "\nthe hien 2: Su dung ma tran request" << endl;
+	cin >> select;
+	if (select == 1)
+	{
+		cout << "nhap allocation" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			for (int j = 1; j <= pr; j++)
+			{
+				cin >> al[i][j];
+			}
+		}
+
+		cout << "nhap MAXIMUM" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			for (int j = 1; j <= pr; j++)
+			{
+				cin >> m[i][j];
+				need[i][j] = m[i][j] - al[i][j];
+			}
+			finish1[i] = false;
+		}
+		cout << "nhap avaiable" << endl;
+
+		for (int i = 1; i <= pr; i++)
+		{
+			cin >> avai[i];
+			work[i] = avai[i];
+		}
+		processwithmax();
+	}
+	if (select == 2)
+	{
+		cout << "nhap allocation" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			for (int j = 1; j <= pr; j++)
+			{
+				cin >> al[i][j];
+			}
+		}
+		cout << "nhap request" << endl;
+		for (int i = 1; i <= p; i++)
+		{
+			for (int j = 1; j <= pr; j++)
+			{
+				cin >> rq[i][j];
+			}
+			finish2[i] = false;
+		}
+		cout << "nhap avaiable" << endl;
+
+		for (int i = 1; i <= pr; i++)
+		{
+			cin >> avai[i];
+			work[i] = avai[i];
+		}
+		processwithrequest();
+	}
+}
+
+int main()
+{
+	input();
+	display();
+
+}
