@@ -39,25 +39,7 @@ int main()
     }
     cout << "\nGia tri toi da cua cai tui se la: ";
     cout << f[n][m] << endl;
-    int i = n, j = n;
-    int nst = 0;
-    int st[20];
-
-    while (i > 0)
-    {
-        if (f[i][j + 1] == 0)
-        {
-            nst++; st[nst] = 0; i--;
-
-        }
-        else {
-            nst++;
-            st[nst] = 1;
-            i--;
-        }
-    }
-    for (int i = nst; i > 0; i--)cout << st[i] << " ";
+    cout<<"Bai toan co do phuc tap la O(n^2)";
     return 0;
 }
 
-//Bai toan co do phuc tap la O(n^4)
