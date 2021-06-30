@@ -1,0 +1,63 @@
+#include <iostream>
+
+using namespace std;
+int maxi(int a, int b)
+{
+    if (a > b)return a;
+    else return b;
+}
+int main()
+{
+    int n, m;
+    cout << "Nhap so luong do vat:\n";
+    cin >> n;
+    cout << "nhap dung luong cua cai tui:\n";
+    cin >> m;
+    int a[100];
+    int dem[100];
+    for (int i = 1; i <= n; i++)
+    {
+        cout << "Nhap khoi luong cua do vat " << i << ": ";
+        cin >> a[i];
+        cout << "Gia tri: ";
+        cin >> dem[i];
+    }
+    int f[100][100];
+    for (int i = 0; i <= n; i++)f[i][0] = 0;
+    for (int i = 0; i <= m; i++)f[0][i] = 0;
+
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+        {
+            if (a[i] <= j)
+            {
+                f[i][j] = maxi(f[i - 1][j], dem[i] + f[i - 1][j - a[i]]);
+            }
+            else f[i][j] == f[i - 1][j];
+        }
+    }
+    cout << "\nGia tri toi da cua cai tui se la: ";
+    cout << f[n][m] << endl;
+    int i = n, j = n;
+    int nst = 0;
+    int st[20];
+
+    while (i > 0)
+    {
+        if (f[i][j + 1] == 0)
+        {
+            nst++; st[nst] = 0; i--;
+
+        }
+        else {
+            nst++;
+            st[nst] = 1;
+            i--;
+        }
+    }
+    for (int i = nst; i > 0; i--)cout << st[i] << " ";
+    return 0;
+}
+
+//Bai toan co do phuc tap la O(n^4)
