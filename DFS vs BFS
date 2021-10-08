@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+
 using namespace std;
 #define MAX 100
 struct GRAPH
@@ -10,20 +11,14 @@ struct GRAPH
 	int trace[MAX];
 	bool visited[MAX];
 };
-bool inputGRAPH(string a, GRAPH& p)
+bool inputGRAPH(GRAPH& p)
 {
-	ifstream fin;
-	fin.open(a);
-	if (fin.is_open())
-	{
-		fin >> p.nVertex;
+	cout << "Enter Testcase: ";
+	cin >> p.nVertex;
 		for (int i = 0; i < p.nVertex; i++)
 			for (int j = 0; j < p.nVertex; j++)
-				fin >> p.a[i][j];
-		return true;
-	}
-	else {cout << "Can't open the file case\n"; return false;
-}
+				cin >> p.a[i][j];
+
 }
 bool AdjacencyMatrix_check(GRAPH& h)
 {
@@ -38,14 +33,15 @@ bool ScalaringMatrix_check(GRAPH& h)
 		if (h.a[i][i] != 0)return false;
 	return true;
 }
-void doDFS(GRAPH &h, int z)
+void doDFS(GRAPH& h, int z)
 {
+	h.visited[z] = true;
 	for (int i = 0; i < h.nVertex; i++)
 	{
 		if (h.a[z][i] != 0 && h.visited[i] == false)
 		{
 			h.trace[i] = z;
-			h.visited[z] = true;
+
 			doDFS(h, i);
 		}
 	}
@@ -56,14 +52,14 @@ bool matrix_check(bool a[], int k)
 		if (a[i] == false)return false;
 	return true;
 }
-bool take_vector(int& h, vector <int> &v)
+bool take_vector(int& h, vector <int>& v)
 {
 	if (v.size() == 0)return false;
 	h = v[0];
 	v.erase(v.begin());
 	return true;
 }
-bool vector_addin(vector<int> &v, int z)
+bool vector_addin(vector<int>& v, int z)
 {
 	if (v.size() + 1 > MAX)return false;
 	v.push_back(z); return true;
@@ -86,22 +82,22 @@ void DFS(GRAPH& h, int f, int l)
 		}
 		cout << f << endl;
 	}
-	else cout << "There is no way go from beginning to last";
+	else cout << "There is no way go from beginning to last\n";
 }
 void doBFS(GRAPH& h, int z)
 {
 	vector <int> v;
 	v.push_back(z);
-	while (v.size()!=0)
+	while (v.size() != 0)
 	{
 		take_vector(z, v);
 		h.visited[z] = true;
 		for (int i = 0; i < h.nVertex; i++)
-		if (h.visited[i] == false && h.a[z][i] != 0)
-		{
-			v.push_back(i);
-			h.trace[i] = z;
-		}
+			if (h.visited[i] == false && h.a[z][i] != 0)
+			{
+				v.push_back(i);
+				h.trace[i] = z;
+			}
 	}
 }
 void BFS(int s, int f, GRAPH& g)
@@ -112,7 +108,7 @@ void BFS(int s, int f, GRAPH& g)
 		g.trace[i] = -1;
 	}
 
-	doBFS(g,s);
+	doBFS(g, s);
 
 	if (g.visited[f] == 1)
 	{
@@ -126,7 +122,7 @@ void BFS(int s, int f, GRAPH& g)
 		cout << endl;
 	}
 	else
-		cout << "Khong co duong di tu dinh " << s << " den dinh " << f;
+		cout << "There is no way go from beginning to last\n";
 	cout << endl;
 }
 
@@ -134,10 +130,9 @@ int main()
 {
 	GRAPH g;
 	string a;
-	cout << "Enter file name: ";
-	cin >> a;
-	if (inputGRAPH(a, g))
-	{
+	cout << "CODE BY TEAM FANNIE_5 \n";
+	cout << "\n=================================================================\n";
+	inputGRAPH(g);
 		if (AdjacencyMatrix_check(g))
 		{
 			if (ScalaringMatrix_check(g))
@@ -155,5 +150,4 @@ int main()
 			else cout << "Matrix is not scalaring";
 		}
 		else cout << "It is not adjacency matrix";
-	}
 }
