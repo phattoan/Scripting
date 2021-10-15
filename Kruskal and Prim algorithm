@@ -1,0 +1,177 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+struct GRAPH
+{
+	int nVertex;
+	int a[100][100];
+	int Spanningtree[100];
+	bool visited[100];
+	bool label[100];
+};
+struct Edge
+{
+	int head;
+	int tail;
+	int weight;
+};
+Edge H[100];
+ostream& operator <<(ostream& os, Edge p)
+{
+	os << "(" << p.tail+1 << "," << p.head+1 << ")";
+	return os;
+}
+
+void inputGRAPH(GRAPH &p)
+{
+	cin >> p.nVertex;
+	for (int i = 0; i < p.nVertex; i++)
+		for(int j=0;j<p.nVertex;j++)
+		cin >> p.a[i][j];
+}
+
+void doPrim(GRAPH& g)
+{
+	Edge max_edge;
+	int n_spanning = 0; // Gán số cạnh của cây khung là 0.
+	int temp = 0;
+	int i = 0;
+	g.visited[0] = true;	//Đánh đấu Vertex đầu tiên là đã duyệt
+	int max;
+	while (n_spanning < g.nVertex - 1)
+	{
+		max = -1;		//gán biến max là -1 vì con số được gọi là vô cực trong GRAPH
+		//cả 2 vòng lặp sẽ duyệt tất cả các đỉnh đã duyệt trong ma trận và tìm đỉnh lớn nhất (j) trong đỉnh đã duyệt (i) để tìm con đường có trọng số lớn nhất
+		for (int i = 0; i < g.nVertex; i++)
+		{
+			if (g.visited[i] == false)		// Ta bắt đầu đỉnh chưa duyệt từ i
+			{
+				for (int j = 0; j < g.nVertex; j++)		//duyệt trong đỉnh i đã duyệt có đỉnh j nào lớn nhất sẽ đi đường đó
+				{
+					if (g.visited[j] == true && g.a[i][j] != 0)
+					{
+						if (max < g.a[i][j] || max == -1)	
+						{	
+							max = g.a[i][j];
+							max_edge.head = i;
+							max_edge.tail = j;
+							max_edge.weight = g.a[i][j];
+						}
+					}
+				}
+			}
+		}
+		//lưu đỉnh đó vào danh sách
+		H[n_spanning] = max_edge;
+		n_spanning++; //tăng số cây khung 
+		g.visited[max_edge.head] = true;	//đánh dấu đã duyệt
+	}	//quay lại vòng lặp while đến khi tìm hết các đỉnh đang cần tìm
+	for (int i = 0; i < n_spanning ; i++)
+	{
+		cout << H[i];
+		temp += H[i].weight;
+	}
+	cout << "\nSpanning tree's Weight: " << temp << endl;
+}
+
+void Prim(GRAPH& g)
+{
+
+	for (int i = 0; i < g.nVertex; i++)
+	{
+		g.visited[i] = false;
+	}
+	doPrim(g);
+
+}
+
+void CreateEdgelist(GRAPH& g, vector <Edge>& list)
+{
+	Edge temp;
+	for (int j=0;j<g.nVertex;j++)
+	{
+		for (int i = j; i < g.nVertex; i++)
+		{
+			if (g.a[j][i] != 0)
+			{
+				temp.head = j;
+				temp.tail = i;
+				temp.weight = g.a[i][j];
+				list.push_back(temp);
+			}
+		}
+	}
+}
+
+void ArrangeEdge(GRAPH& g, vector<Edge>& b)
+{
+	Edge t;
+	for (int i = 0; i <b.size(); i++)
+	{
+		for (int j = i+1; j < b.size(); j++)
+		{
+			if (b[i].weight < b[j].weight)
+			{
+				t = b[i];
+				b[i] = b[j];
+				b[j] = t;
+			}
+		}
+	}
+}
+
+bool Check_spanningCycle(GRAPH& g, vector<Edge>v,Edge t)
+{
+	int i = 0;
+	for (int i = 0; i < v.size(); i++)
+	{
+		if(t.tail==v[i].tail||t.tail==v[i].head)
+			for (int j = 0; j < v.size(); j++)
+			{
+				if (t.head == v[i].tail || t.head == v[i].head)
+				{
+					return true;
+				}
+			}
+	}
+	return false;
+}
+ 
+void Kruskal(GRAPH& g)
+{
+	int label[100];
+	for (int i = 0; i < g.nVertex; i++)
+	{
+		g.visited[i] = false;
+	}
+	int n_spanning = 0;
+	vector <Edge> v, list_edge;
+	CreateEdgelist(g, list_edge);	//Lưu tất cả các cạnh có trên Graph 
+	ArrangeEdge(g,list_edge);		// Sắp xếp các cạnh từ lớn đến bé
+	while (v.size() < g.nVertex - 1)	//Cho vòng lặp đến khi tìm tất cả các đỉnh (-1 vì khi ta duyệt hết tất cả các đỉnh thì nếu duyệt hết số canh bằng với đồ thì sẽ có chu trình
+	{
+		if (!Check_spanningCycle(g,v,list_edge[n_spanning]))	//Kiểm tra đỉnh tiếp theo có theo chu trình hay không
+		{
+			v.push_back(list_edge[n_spanning]);	
+			
+		}
+		n_spanning++;	//Tăng số lượng cây khung
+	}
+	int temp = 0;
+	for (int i = 0; i < v.size(); i++)
+	{
+		cout << "(" << v[i].head + 1 << "," << v[i].tail + 1 << ")";
+		temp += v[i].weight;
+	}
+	cout << "\nSpanning tree's Weight: " << temp << endl;
+}
+
+int main()
+{
+	GRAPH g;
+	inputGRAPH(g);
+	cout << "\n============ Prim's Algorithm ==============\n";
+	Prim(g);
+	cout << "\n============= Kruskal's Algorithm ============\n";
+	Kruskal(g);
+}
